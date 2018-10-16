@@ -7,6 +7,7 @@ from __future__ import division, absolute_import, print_function
 __all__ = ['Features']
 
 import os
+import numpy as np
 from . import example_data
 
 
@@ -40,25 +41,34 @@ class Features(BaseFeatures):
             only observations with SNR greater than this threshold
             are considered
         """
-        snr_thresh = 'SNR_greater_{:0.1f}_'.format(SNR_thresh)
-        photometry = self.photometry.query('SNR > @SNR_thresh')
+        snr_thresh = '_SNR_greater_{:0.1f}'.format(SNR_thresh)
+        photometry = photometry.query('SNR > @SNR_thresh')
         df = photometry.groupby(['band', 'SNID']).agg(dict(mjd=[min, max, 'count'],
-                                                           SNR=[max, np.median]))
+                                                           SNR=[max, np.nanmedian],
+                                                           SIM_MAGOBS=[np.nanmedian]))
 
-        dfs_mjd = list(df.loc[b]['mjd'].rename(columns=dict(min=b+'_mjd_'+snr_thresh+'min',
-                                                            max=b+'_mjd_'+snr_thresh+'max',
-                                                            count=b+snr_thresh + 'numObs'))
+        dfs_mjd = list(df.loc[b]['mjd'].rename(columns=dict(min=b+snr_thresh+'_mjd'+'_min',
+                                                            max=b+snr_thresh+'_mjd'+'_max',
+                                                            count=b+snr_thresh + '_numObs'))
                        for b in photometry.band.unique())
 
-        dfs_snr = list(df.loc[b]['SNR'].rename(columns=dict(max=b+'_'+snr_thresh + 'max',
-                                                            median=b+'_' + snr_thresh + 'median'))
+        dfs_snr = list(df.loc[b]['SNR'].rename(columns=dict(max=b+snr_thresh+'_SNR'+'_max',
+                                                            nanmedian=b+snr_thresh+'_SNR'+'_median'))
                        for b in photometry.band.unique())
+
+        dfs_magobs = list(df.loc[b]['SIM_MAGOBS'].rename(columns=dict(nanmedian=b+snr_thresh+'_SIM_MAGOBS'+'_median'))
+                          for b in photometry.band.unique())
 
         for df in dfs_mjd:
+            print(df.columns)
+            print(summary.columns)
             summary = summary.join(df)
 
 
         for df in dfs_snr:
+            summary = summary.join(df)
+
+        for df in dfs_magobs:
             summary = summary.join(df)
 
         return summary
