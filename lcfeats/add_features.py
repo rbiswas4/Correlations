@@ -11,6 +11,14 @@ import numpy as np
 from . import example_data
 
 
+def diffmedian(series):
+    series = series.sort_values().diff()
+    return np.nanmedian(series)
+def diffstd(series):
+    series = series.sort_values().diff()
+    return np.std(series)
+
+
 class BaseFeatures(object):
     pass
 
@@ -25,6 +33,16 @@ class Features(BaseFeatures):
             photometry.SNR = photometry.flux / photometry.fluxerr
 
         self.photometry = photometry
+
+    @staticmethod
+    def diffmedian(series):
+        series = series.sort_values().diff()
+        return np.nanmedian(series)
+    
+    @staticmethod
+    def diffstd(series):
+        series = series.sort_values().diff()
+        return np.std(series)
 
     @staticmethod
     def add_singleband_quants(photometry, summary, SNR_thresh=3.0):
@@ -43,13 +61,16 @@ class Features(BaseFeatures):
         """
         snr_thresh = '_SNR_greater_{:0.1f}'.format(SNR_thresh)
         photometry = photometry.query('SNR > @SNR_thresh')
-        df = photometry.groupby(['band', 'SNID']).agg(dict(mjd=[min, max, 'count'],
+        df = photometry.groupby(['band', 'SNID']).agg(dict(mjd=[min, max, 'count',
+                                                                diffmedian, diffstd],
                                                            SNR=[max, np.nanmedian],
                                                            SIM_MAGOBS=[np.nanmedian]))
 
         dfs_mjd = list(df.loc[b]['mjd'].rename(columns=dict(min=b+snr_thresh+'_mjd'+'_min',
                                                             max=b+snr_thresh+'_mjd'+'_max',
-                                                            count=b+snr_thresh + '_numObs'))
+                                                            count=b+snr_thresh + '_numObs',
+                                                            diffmedian=b+snr_thresh + '_diffmedian',
+                                                            diffstd=b+snr_thresh + '_diffstd'))
                        for b in photometry.band.unique())
 
         dfs_snr = list(df.loc[b]['SNR'].rename(columns=dict(max=b+snr_thresh+'_SNR'+'_max',
