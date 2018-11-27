@@ -4,14 +4,37 @@ and the photometry file.
 """
 from __future__ import division, absolute_import, print_function
 
-__all__ = ['Metrics']
+__all__ = ['Features', 'Metrics']
 
 import os
 from . import example_data
 import pandas as pd
 import numpy as np
+import abc
+from future.utils import with_metaclass
+
+class BaseFeatures(with_metaclass(abc.ABCMeta, object)):
+
+    @abc.abstractmethod
+    def calc_metric(self):
+        pass
+
+    @abc.abstractproperty
+    def metric_name(self):
+        pass
+
+    @abc.abstractproperty
+    def requires_features(self):
+        pass
+
+class Features(BaseFeatures):
+    def __init__(self, metric_name, features_required=None):
+        self.metric_name  = metric_name
+        self.requires_features = features_required
 
 
+    def calc_metric(self):
+        pass
 class Metrics(object):
     """
     """
@@ -29,7 +52,13 @@ class Metrics(object):
         metric_list.append(('num_mjd_range', self._add_num_mjd_range))
         return metric_list
 
+    def calc_metrics_list(self, metric_list):
+        """
+        """
+        for metric_name in list:
+            calc_metric(metric)
 
+    @staticmethod
     def add_num_mjd_range(self, SNR_thresh=1.0):
         filt = 'SNR_greater_{0:0.1f}'.format(SNR_thresh)
         ss = self.summary
@@ -37,7 +66,6 @@ class Metrics(object):
                                 quants=['mjd_max', 'mjd_min'])
         self.summary = ss
 
-    @staticmethod
     def num_mjd_range(ss, myfilt='SNR_greater_3.0',
                       quants=['mjd_max', 'mjd_min']):
         """
