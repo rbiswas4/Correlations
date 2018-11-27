@@ -49,7 +49,7 @@ if __name__ == '__main__':
     for loc in locs:
         # construct query
         divisor = 50
-        if int(loc[-2:]) in (51, 61, 63, 64):
+        if int(loc[-2:]) in (51,61,62,63,64,84,90,91,93):
             divisor = 1
         query = 'SNID%{0}==0'.format(divisor)
         print('starting processing files in {0} at time {1}'.format(loc, time.time()))
