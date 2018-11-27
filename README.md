@@ -21,4 +21,5 @@ python setup.py install --user
 describes the options. What this will do is create a directory corresponding to each model and have a `summary_head` and
 `summary_phot` hdf files. 
 
-## 4.  
+## 4. script to run metrics.
+`compressed2metrics.ipynb` is an example of how to play with the the hdf files and produce some metrics. The ones we did are simple ccolumn combinations of the ones being produced which have the csv files (and can be joined to the summary file with the same key).
