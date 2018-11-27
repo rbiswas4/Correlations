@@ -1,6 +1,6 @@
 # How to run Metrics
 - You should have python3 (hopefully works on 2, but not really checked).
-- Install `future`, `fitsio` and `pandas` (hopefully the rest will just work
+- Install `future`, `fitsio` and `pandas` , `pytables` (hopefully the rest will just work
 ## 1. clone the LSST throughputs directory and export its location:
 ```
 cd convenient_location
