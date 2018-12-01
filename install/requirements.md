@@ -1,0 +1,5 @@
+- pandas
+- SNData
+- pytables
+- future
+
