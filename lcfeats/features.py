@@ -1,9 +1,12 @@
 """ 
-The methods of this module are maeant to apply to the summary / metadata file 
-and the photometry file. 
+Features are quantities that are already recorded in the simulation summary
+files, or are calculated from the photometry. The philosophy behind these
+quantities is that several `metrics` are calculable from such quantities, and
+therefore, the first step is to calculate the set of Features required by a
+list of metrics. Metrics are then calculated in a second step. This should
+enable quick re-calculation of some metrics.
 """
 from __future__ import division, absolute_import, print_function
-
 __all__ = ['Features']
 
 import os
