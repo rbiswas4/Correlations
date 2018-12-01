@@ -6,7 +6,7 @@ here = __file__
 basedir = os.path.split(here)[0]
 # data = os.path.join(basedir, 'data')
 example_data = os.path.join(basedir, 'example_data')
-from .add_features import *
+from .features import *
 from .metrics import *
 from .ioutils import *
 
